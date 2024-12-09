@@ -186,9 +186,9 @@ class Funky(LIF):
         self.mem = torch.zeros_like(self.mem, device=self.mem.device)
         return self.mem
 
-    # def init_funky(self):
-    #     """Deprecated, use :class:`Funky.reset_mem` instead"""
-    #     return self.reset_mem()
+    def init_funky(self):
+        """Deprecated, use :class:`Funky.reset_mem` instead"""
+        return self.reset_mem()
 
     def forward(self, input_, mem=None):
 
@@ -231,6 +231,27 @@ class Funky(LIF):
             return spk
         else:
             return spk, self.mem
+
+
+    # Override the parent fire method to fire in a funky silly way
+    def fire(self, mem):
+        """Generates spike if mem > threshold and updates threshold randomly after firing.
+        Returns spk."""
+
+        if self.state_quant:
+            mem = self.state_quant(mem)
+
+        mem_shift = mem - self.threshold
+        spk = self.spike_grad(mem_shift)
+
+        spk = spk * self.graded_spikes_factor
+
+        # Update threshold randomly if spike
+        if spk:
+            self.threshold += torch.normal(mean=0.0, std=0.1, size=self.threshold.shape)
+
+        return spk
+
 
     def _base_state_function(self, input_):
         base_fn = self.beta.clamp(0, 1) * self.mem + input_
