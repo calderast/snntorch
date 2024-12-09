@@ -214,6 +214,7 @@ class Funky(LIF):
                 self.mem.size(0), self.mem
             )  # batch_size
         else:
+            threshold_before_spike = self.threshold
             spk = self.fire(self.mem)
 
         if not self.reset_delay:
@@ -221,7 +222,7 @@ class Funky(LIF):
                 spk / self.graded_spikes_factor - self.reset
             )  # avoid double reset
             if self.reset_mechanism_val == 0:  # reset by subtraction
-                self.mem = self.mem - do_reset * self.threshold
+                self.mem = self.mem - do_reset * threshold_before_spike
             elif self.reset_mechanism_val == 1:  # reset to zero
                 self.mem = self.mem - do_reset * self.mem
 
@@ -246,9 +247,9 @@ class Funky(LIF):
 
         spk = spk * self.graded_spikes_factor
 
-        # Update threshold randomly if spike
-        if spk:
-            self.threshold += torch.normal(mean=0.0, std=0.1, size=self.threshold.shape)
+        # Update threshold randomly if spike !!
+        if torch.any(spk):
+            self.threshold += torch.normal(mean=0.0, std=0.05, size=self.threshold.shape)
 
         return spk
 
