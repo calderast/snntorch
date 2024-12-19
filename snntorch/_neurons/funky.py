@@ -6,7 +6,9 @@ from torch import nn
 class Funky(LIF):
     """
     First-order "funky" leaky integrate-and-fire neuron model.
-    Threshold is randomly moved up or down when a spike is fired.
+    Spike threshold is randomly moved up or down when a spike is fired,
+    by an amount drawn from a normal distribution with mean 0
+    and standard deviation "funkiness".
     Input is assumed to be a current injection.
     Membrane potential decays exponentially with rate beta.
     For :math:`U[T] > U_{\\rm thr} ⇒ S[T+1] = 1`.
@@ -64,6 +66,13 @@ class Funky(LIF):
         decay rate for all neurons in a layer), or multi-valued (one weight per
         neuron).
     :type beta: float or torch.tensor
+
+    :param funkiness: Controls how much the spike threshold should be modified
+    each time a spike is fired. Formally, funkiness is the standard deviation 
+    of the normal distribution from which a the random threshold modification
+    is drawn. Defaults to 0 (making the Funky neuron equivalent to a standard
+    Leaky neuron).
+    :type funkiness: float, optional
 
     :param threshold: Threshold for :math:`mem` to reach in order to
         generate a spike `S=1`. Defaults to 1
