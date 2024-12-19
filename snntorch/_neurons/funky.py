@@ -137,6 +137,7 @@ class Funky(LIF):
     def __init__(
         self,
         beta,
+        funkiness=0.0,
         threshold=1.0,
         spike_grad=None,
         surrogate_disable=False,
@@ -177,6 +178,7 @@ class Funky(LIF):
             self.state_function = self._base_int
 
         self.reset_delay = reset_delay
+        self.funkiness = funkiness
 
     def _init_mem(self):
         mem = torch.zeros(0)
@@ -249,7 +251,7 @@ class Funky(LIF):
 
         # Update threshold randomly if spike !!
         if torch.any(spk):
-            self.threshold += torch.normal(mean=0.0, std=0.05, size=self.threshold.shape)
+            self.threshold += torch.normal(mean=0.0, std=self.funkiness, size=self.threshold.shape)
 
         return spk
 
