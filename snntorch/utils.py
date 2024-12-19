@@ -248,7 +248,7 @@ def _final_layer_check(net):
     if isinstance(list(net._modules.values())[-1], snn.Leaky):
         return 2
     if isinstance(list(net._modules.values())[-1], snn.Funky):
-        return 2 # idk? I did this bc Leaky is also 2
+        return 2
     if isinstance(list(net._modules.values())[-1], snn.RLeaky):
         return 2
     if isinstance(list(net._modules.values())[-1], snn.SConv2dLSTM):
